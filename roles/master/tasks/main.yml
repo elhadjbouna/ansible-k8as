@@ -16,7 +16,7 @@
 
 - name: Install flannel pod network
   become: false
-  command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+  command: kubectl apply -f https://raw.githubusercontent.com/projectcalico/calico/v3.26.1/manifests/calico.yaml
 
 - name: Generate join command
   command: kubeadm token create --print-join-command
@@ -25,3 +25,16 @@
 - name: Copy join command to local file
   become: false
   local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+
+- name: Add kubectl completion to bashrc
+  shell: |
+     echo 'source <(kubectl completion bash)' >> /home/apx08/.bashrc
+  args:
+    executable: /bin/bash
+  tags: cmpt
+
+- name: Source the bashrc file
+  shell: 'source /home/apx08/.bashrc'
+  args:
+       executable: /bin/bash
+  tags: cmpt
