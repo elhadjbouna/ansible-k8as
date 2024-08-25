@@ -31,10 +31,9 @@
      echo 'source <(kubectl completion bash)' >> /home/apx08/.bashrc
   args:
     executable: /bin/bash
-  tags: cmpt
+
 
 - name: Source the bashrc file
   shell: 'source /home/apx08/.bashrc'
   args:
        executable: /bin/bash
-  tags: cmpt
