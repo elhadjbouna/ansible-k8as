@@ -1,10 +1,12 @@
 ---
 - hosts: master
   become: yes
+  remote_user: ubuntu
   roles:
     - master
 
 - hosts: worker
   become: yes
+  remote_user: ubuntu
   roles:
     - worker
