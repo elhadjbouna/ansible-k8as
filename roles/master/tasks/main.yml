@@ -13,11 +13,14 @@
         state: directory
         mode: '0755'
 
-- name: Copier le fichier admin.conf vers .kube/config
-  copy:
+- name: Copier le fichier admin.conf du master vers Jenkins
+  synchronize:
         src: /etc/kubernetes/admin.conf
         dest: "/home/{{ ansible_user }}/.kube/config"
-        mode: '0644'
+        mode: push
+  delegate_to: "{{ groups['master'][0] }}"
+  run_once: true
+
 
 - name: Changer le propriétaire du fichier config
   file:
