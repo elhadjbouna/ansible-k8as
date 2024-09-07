@@ -29,6 +29,12 @@
     state: present
     update_cache: yes
 
+- name: Créer un répertoire
+  file:
+    path: /etc/containerd/
+    state: directory
+    mode: '0755'
+
 - name: Configure containerd
   template:
     src: containerd-config.toml.j2
