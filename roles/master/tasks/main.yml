@@ -7,12 +7,24 @@
 - name: Initialize the Kubernetes cluster using kubeadm
   command: kubeadm init --kubernetes-version={{ kubernetes_version }}
 
-- name: Setup kubeconfig for vagrant user
-  command: "{{ item }}"
-  with_items:
-    - mkdir -p /home/apx08/.kube
-    - cp -i /etc/kubernetes/admin.conf /home/apx08/.kube/config
-    - chown apx08:apx08 /home/apx08/.kube/config
+- name: Créer le répertoire .kube
+  file:
+        path: "/home/{{ ansible_user }}/.kube"
+        state: directory
+        mode: '0755'
+
+- name: Copier le fichier admin.conf vers .kube/config
+  copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "/home/{{ ansible_user }}/.kube/config"
+        mode: '0644'
+
+- name: Changer le propriétaire du fichier config
+  file:
+        path: "/home/{{ ansible_user }}/.kube/config"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
 
 - name: Install flannel pod network
   become: false
@@ -25,15 +37,14 @@
 - name: Copy join command to local file
   become: false
   local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
-
-- name: Add kubectl completion to bashrc
+  
+- name: Ajouter l'auto-complétion kubectl au fichier .bashrc
   shell: |
-     echo 'source <(kubectl completion bash)' >> /home/apx08/.bashrc
+    echo 'source <(kubectl completion bash)' >> /home/{{ ansible_user }}/.bashrc
   args:
     executable: /bin/bash
 
-
-- name: Source the bashrc file
-  shell: 'source /home/apx08/.bashrc'
+- name: Sourcer le fichier bashrc
+  shell: source /home/{{ ansible_user }}/.bashrc
   args:
-       executable: /bin/bash
+    executable: /bin/bash
